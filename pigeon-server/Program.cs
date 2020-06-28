@@ -44,11 +44,19 @@ namespace pigeon_server
                 Console.Clear();
                 Console.Write(" [ Connected ] \r\n");
 
+                // the fkng shit, baby, idk how it works, just do it urguy
+                byte[] buffer = new byte[512];
+
                 while(true)
                 {
                     // get file
+
+                    // when u will take file, just break this loop.
                 }
+                break;
             }
+
+            Console.Write("  File transfered.\r\n");
 
         }
     }
