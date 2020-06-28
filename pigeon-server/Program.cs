@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,6 +22,8 @@ namespace pigeon_server
             }
             Console.ReadKey();
             // start listener
+
+            TcpListener TcpListener = new TcpListener(55387);
 
 
         }
