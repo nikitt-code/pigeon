@@ -33,17 +33,21 @@ namespace pigeon_server
             tcpListener.Start();
 
             Boolean isConnected = false;
+            TcpClient tcpClient = null;
+            NetworkStream ns    = null;
+            StreamReader sr     = null;
+            StreamWriter sw     = null;
 
             while (true)
             {
                 if (!isConnected)
                 {
-                    TcpClient tcpClient = tcpListener.AcceptTcpClient();
-                    NetworkStream ns = tcpClient.GetStream();
+                    tcpClient = tcpListener.AcceptTcpClient();
+                    ns = tcpClient.GetStream();
                     ns.ReadTimeout = 36000;
                     ns.WriteTimeout = 36000;
-                    StreamReader sr = new StreamReader(ns);
-                    StreamWriter sw = new StreamWriter(ns);
+                    sr = new StreamReader(ns);
+                    sw = new StreamWriter(ns);
                     sw.AutoFlush = true;
                     isConnected = true;
                     Console.Clear();
