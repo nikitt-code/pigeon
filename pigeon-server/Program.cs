@@ -12,6 +12,24 @@ namespace pigeon_server
 {
     class Program
     {
+        public static void W(string T)
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine(T);
+            Console.ResetColor();
+        }
+        public static void G(string T)
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine(T);
+            Console.ResetColor();
+        }
+        public static void R(string T)
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine(T);
+            Console.ResetColor();
+        }
         public struct Packet
         {
             public string Filename;
@@ -38,25 +56,33 @@ namespace pigeon_server
             ns.ReadTimeout = 300000;
             ns.WriteTimeout = 1000;
             Console.Clear();
-            Console.Write("[Log] Connected \r\n");
+            W("[Log] Connected");
 
-            byte[] buffer = ReadContents(ns);
-            Packet[] files = null;
-            var Result = DispatchPacket(ref files, buffer);
-            if (Result == 0)
+            try
             {
-                Console.Write("[Log] Files successfully transferred.\r\n");
-                SaveFiles(files);
-            } else
-            {
-                Console.Write("[Warning] Some files were corrupted. Do you still want to save them?\r\n");
-                Console.Write("(Y/N): ");
-                string Answer = Console.ReadLine();
-                switch (Answer)
+                byte[] buffer = ReadContents(ns);
+                Packet[] files = null;
+                var Result = DispatchPacket(ref files, buffer);
+                if (Result == 0)
                 {
-                    case "Y": SaveFiles(files); break;
-                    default: return;
+                    W("[Log] Files successfully transferred.");
+                    SaveFiles(files);
                 }
+                else
+                {
+                    /*  Console.Write("[Warning] Some files were corrupted. Do you still want to save them?\r\n");
+                      Console.Write("(Y/N): ");
+                      string Answer = Console.ReadLine();
+                      switch (Answer)
+                      {
+                          case "Y": SaveFiles(files); break;
+                          default: return;
+                      }*/
+                    SaveFiles(files);
+                }
+            } catch
+            {
+                R("[ERROR] Error occured while saving.");
             }
 
         }
@@ -67,12 +93,12 @@ namespace pigeon_server
         /// <param name="files">Array of dispatched packets</param>
         private static void SaveFiles(Packet[] files)
         {
-            Console.Write("[Log] Files will be saved to /save/. Press ENTER to continue."); Console.ReadLine();
+            W("[Log] Files will be saved to /save/. Press ENTER to continue."); Console.ReadLine();
             if (!Directory.Exists("save")) Directory.CreateDirectory("save");
             foreach (Packet p in files)
             {
                 File.WriteAllBytes("save/" + p.Filename, p.FileContents);
-                Console.Write("[Log] Saved " + p.Filename + "!\r\n");
+                G("[Log] Saved " + p.Filename + "!\r\n");
             }
         }
 

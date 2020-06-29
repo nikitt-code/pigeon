@@ -11,6 +11,24 @@ namespace pigeon_client
 {
     class Program
     {
+        public static void W(string T)
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine(T);
+            Console.ResetColor();
+        }
+        public static void G(string T)
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine(T);
+            Console.ResetColor();
+        }
+        public static void R(string T)
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine(T);
+            Console.ResetColor();
+        }
         static void Main(string[] args)
         {
             string Welcome = "\r\n  =================================\r\n" +
@@ -46,31 +64,44 @@ namespace pigeon_client
         public static List<string> FilesToSend = new List<string>();
         private static void SendFile(string ip)
         {
-            Console.WriteLine("[Log] Initializing sender...");
-            TcpClient tcpClient = new TcpClient(ip, 55387);
-            NetworkStream ns = tcpClient.GetStream();
-            ns.WriteTimeout = 600000;
-            ns.ReadTimeout = 1000;
+            
+            W("[Log] Initializing sender...");
+            TcpClient tcpClient = null;
+            NetworkStream ns = null;
+            try
+            {
+                tcpClient = new TcpClient(ip, 55387);
+                ns = tcpClient.GetStream();
+                ns.WriteTimeout = 600000;
+                ns.ReadTimeout = 1000;
+            } catch
+            {
+                R("[ERROR] Error occured while connecting."); return;
+            }
 
             foreach (string SFile in FilesToSend)
             {
-                
-                byte[] BytesOfFileToSend = File.ReadAllBytes(SFile);
-                string RealFilename = Path.GetFileName(SFile);
-                Console.WriteLine("[Log] Sending " + RealFilename);
-                ulong FileSize = (ulong)new FileInfo(SFile).Length;
+                try
+                {
+                    byte[] BytesOfFileToSend = File.ReadAllBytes(SFile);
+                    string RealFilename = Path.GetFileName(SFile);
+                    W("[Log] Sending " + RealFilename);
+                    ulong FileSize = (ulong)new FileInfo(SFile).Length;
 
-                List<byte> Constructor = new List<byte>();
-                Constructor.AddRange(Encoding.UTF8.GetBytes(RealFilename));
-                Constructor.Add(0x00);
-                Constructor.AddRange(BitConverter.GetBytes(FileSize));
-                Constructor.AddRange(BytesOfFileToSend);
+                    List<byte> Constructor = new List<byte>();
+                    Constructor.AddRange(Encoding.UTF8.GetBytes(RealFilename));
+                    Constructor.Add(0x00);
+                    Constructor.AddRange(BitConverter.GetBytes(FileSize));
+                    Constructor.AddRange(BytesOfFileToSend);
 
-                byte[] ToSend = Constructor.ToArray();
-                Constructor.Clear();
-
-                ns.Write(ToSend, 0, ToSend.Length);
-                Console.WriteLine("[Log] Sent " + RealFilename);
+                    byte[] ToSend = Constructor.ToArray();
+                    Constructor.Clear();
+                    ns.Write(ToSend, 0, ToSend.Length);
+                    G("[Log] Sent " + RealFilename);
+                } catch
+                {
+                    R("[ERROR] Error occured while sending " + SFile); return;
+                }
             }
             tcpClient.Close();
         }
