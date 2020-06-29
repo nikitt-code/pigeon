@@ -21,9 +21,8 @@ namespace pigeon_client
                 Console.Write(c);
                 Thread.Sleep(5);
             }
-            Console.ReadKey();
 
-            if (args.Length != 3)
+            if (args.Length != 2)
             {
                 Console.WriteLine("Usage: client.exe ip file/dir_to_send");
                 Console.WriteLine("File -> file to send");
