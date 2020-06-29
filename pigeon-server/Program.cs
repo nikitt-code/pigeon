@@ -31,33 +31,30 @@ namespace pigeon_server
             int port = 55387;
             TcpListener tcpListener = new TcpListener(ip, port);
             tcpListener.Start();
+            TcpClient tcpClient = tcpListener.AcceptTcpClient();
+            NetworkStream ns = tcpClient.GetStream();
+            ns.ReadTimeout = 36000;
+            ns.WriteTimeout = 36000;
+            StreamReader sr = new StreamReader(ns);
+            StreamWriter sw = new StreamWriter(ns);
+            sw.AutoFlush = true;
+            Console.Clear();
+            Console.Write(" [ Connected ] \r\n");
 
-            while (true)
-            {
-                TcpClient tcpClient = tcpListener.AcceptTcpClient();
-                NetworkStream ns = tcpClient.GetStream();
-                ns.ReadTimeout = 36000;
-                ns.WriteTimeout = 36000;
-                StreamReader sr = new StreamReader(ns);
-                StreamWriter sw = new StreamWriter(ns);
-                sw.AutoFlush = true;
-                Console.Clear();
-                Console.Write(" [ Connected ] \r\n");
+            byte[] buffer = ReadContents(ns);
 
-                // the fkng shit, baby, idk how it works, just do it urguy
-                byte[] buffer = new byte[512];
-
-                while(true)
-                {
-                    // get file
-
-                    // when u will take file, just break this loop.
-                }
-                break;
-            }
 
             Console.Write("  File transfered.\r\n");
 
+        }
+
+        public static byte[] ReadContents(Stream str)
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                str.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+            }
         }
     }
 }
