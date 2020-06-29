@@ -41,18 +41,18 @@ namespace pigeon_server
             ns.ReadTimeout = 300000;
             ns.WriteTimeout = 1000;
             Console.Clear();
-            Console.Write(" [ Connected ] \r\n");
+            Console.Write("[Log] Connected \r\n");
 
             byte[] buffer = ReadContents(ns);
             Packet[] files = null;
             var Result = DispatchPacket(ref files, buffer);
             if (Result == 0)
             {
-                Console.Write("  Files successfully transferred.\r\n");
+                Console.Write("[Log] Files successfully transferred.\r\n");
                 SaveFiles(files);
             } else
             {
-                Console.Write("  Some files were corrupted. Do you still want to save them?\r\n");
+                Console.Write("[Warning] Some files were corrupted. Do you still want to save them?\r\n");
                 Console.Write("(Y/N): ");
                 string Answer = Console.ReadLine();
                 switch (Answer)
@@ -70,11 +70,11 @@ namespace pigeon_server
         /// <param name="files">Array of dispatched packets</param>
         private static void SaveFiles(Packet[] files)
         {
-            Console.Write(" Files will be saved to /save/. Press ENTER to continue."); Console.ReadLine();
+            Console.Write("[Log] Files will be saved to /save/. Press ENTER to continue."); Console.ReadLine();
             foreach (Packet p in files)
             {
                 File.WriteAllBytes("save/" + p.Filename, p.FileContents);
-                Console.Write("Saved " + p.Filename + "!\r\n");
+                Console.Write("[Log] Saved " + p.Filename + "!\r\n");
             }
         }
 
@@ -131,7 +131,7 @@ namespace pigeon_server
         /// <returns>String</returns>
         public static string ReadNT_UTF8_String(byte[] array, int offset, int limit=128)
         {
-            if (array.Length <= offset) throw new ArgumentException("Offset is higher than array length");
+            if (array.Length <= offset) throw new ArgumentException("[Log] Offset is higher than array length");
             string Output = "";
             for (int i = offset; i<array.Length; i++)
             {

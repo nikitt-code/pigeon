@@ -25,9 +25,9 @@ namespace pigeon_client
 
             if (args.Length != 3)
             {
-                Console.WriteLine("Usage: client.exe ip file/dir_to_send");
-                Console.WriteLine("File -> file to send");
-                Console.WriteLine("Dir -> directory to send (NON-RECURISVE!!!!!!!)");
+                Console.WriteLine("[Info] Usage: client.exe ip file/dir_to_send");
+                Console.WriteLine("[Info] File -> file to send");
+                Console.WriteLine("[Info] Dir -> directory to send (NON-RECURISVE!!!!!!!)");
             } else
             {
                 string ip = args[0];
@@ -47,7 +47,7 @@ namespace pigeon_client
         public static List<string> FilesToSend = new List<string>();
         private static void SendFile(string ip)
         {
-            Console.WriteLine("=[ Initializing sender... ]=");
+            Console.WriteLine("[Log] Initializing sender...");
             TcpClient tcpClient = new TcpClient(ip, 55387);
             NetworkStream ns = tcpClient.GetStream();
             ns.WriteTimeout = 600000;
@@ -58,7 +58,7 @@ namespace pigeon_client
                 
                 byte[] BytesOfFileToSend = File.ReadAllBytes(SFile);
                 string RealFilename = Path.GetFileName(SFile);
-                Console.WriteLine("-> Sending " + RealFilename);
+                Console.WriteLine("[Log] Sending " + RealFilename);
                 ulong FileSize = (ulong)new FileInfo(SFile).Length;
 
                 List<byte> Constructor = new List<byte>();
@@ -71,7 +71,7 @@ namespace pigeon_client
                 Constructor.Clear();
 
                 ns.Write(ToSend, 0, ToSend.Length);
-                Console.WriteLine("[+] Sent " + RealFilename);
+                Console.WriteLine("[Log] Sent " + RealFilename);
             }
             tcpClient.Close();
         }
