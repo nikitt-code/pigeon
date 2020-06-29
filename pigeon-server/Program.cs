@@ -68,6 +68,7 @@ namespace pigeon_server
         private static void SaveFiles(Packet[] files)
         {
             Console.Write("[Log] Files will be saved to /save/. Press ENTER to continue."); Console.ReadLine();
+            if (!Directory.Exists("save")) Directory.CreateDirectory("save");
             foreach (Packet p in files)
             {
                 File.WriteAllBytes("save/" + p.Filename, p.FileContents);
