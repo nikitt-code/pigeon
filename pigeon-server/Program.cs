@@ -29,11 +29,6 @@ namespace pigeon_server
                 Console.Write(c);
                 Thread.Sleep(5);
             }
-<<<<<<< HEAD
-=======
-            // start listener
->>>>>>> 4ce1cc59fc23d1cf0b4d147830dd88296128864c
-
             IPAddress ip = IPAddress.Parse("0.0.0.0");
             int port = 55387;
             TcpListener tcpListener = new TcpListener(ip, port);
