@@ -7,7 +7,7 @@
     <ProjectGuid>{F54560D4-ECD1-4B5B-AF63-8197AD3BA4C5}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>pigeon_client</RootNamespace>
-    <AssemblyName>pigeon_client</AssemblyName>
+    <AssemblyName>pigeon-client</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
