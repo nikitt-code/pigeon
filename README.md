@@ -1,6 +1,5 @@
 # Pegion
-
-![https://github.com/nikitt-code/pegion](https://psv4.userapi.com/c856436/u463406970/docs/d11/f9c991e6dbb0/pigeon.png)
+https://github.com/nikitt-code/pegion
 
 ### Client
 ```bash
