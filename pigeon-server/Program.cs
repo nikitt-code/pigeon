@@ -48,7 +48,7 @@ namespace pigeon_server
             var Result = DispatchPacket(ref files, buffer);
             if (Result == 0)
             {
-                Console.Write("  File successfully transferred.\r\n");
+                Console.Write("  Files successfully transferred.\r\n");
                 SaveFiles(files);
             } else
             {

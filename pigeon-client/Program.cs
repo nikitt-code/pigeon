@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,33 +25,66 @@ namespace pigeon_client
 
             if (args.Length != 3)
             {
-                Console.WriteLine("Usage: client.exe file/dir_to_send ip port");
+                Console.WriteLine("Usage: client.exe ip file/dir_to_send");
                 Console.WriteLine("File -> file to send");
                 Console.WriteLine("Dir -> directory to send (NON-RECURISVE!!!!!!!)");
             } else
             {
-                string selection = args[0];
-                string ip = args[1];
-                int port = int.Parse(args[2]);
-                
+                string ip = args[0];
+                string selection = args[1];
+
                 if (Directory.Exists(selection))
                 {
-                    SendDirectory(selection);
+                    SendDirectory(selection, ip);
                 } else
                 {
-                    SendFile(selection);
+                    FilesToSend.Add(selection);
+                    SendFile(ip);
                 }
             }
         }
 
-        private static void SendFile(string selection)
+        public static List<string> FilesToSend = new List<string>();
+        private static void SendFile(string ip)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("=[ Initializing sender... ]=");
+            TcpClient tcpClient = new TcpClient(ip, 55387);
+            NetworkStream ns = tcpClient.GetStream();
+            ns.WriteTimeout = 600000;
+            ns.ReadTimeout = 1000;
+
+            foreach (string SFile in FilesToSend)
+            {
+                
+                byte[] BytesOfFileToSend = File.ReadAllBytes(SFile);
+                string RealFilename = Path.GetFileName(SFile);
+                Console.WriteLine("-> Sending " + RealFilename);
+                ulong FileSize = (ulong)new FileInfo(SFile).Length;
+
+                List<byte> Constructor = new List<byte>();
+                Constructor.AddRange(Encoding.UTF8.GetBytes(RealFilename));
+                Constructor.Add(0x00);
+                Constructor.AddRange(BitConverter.GetBytes(FileSize));
+                Constructor.AddRange(BytesOfFileToSend);
+
+                byte[] ToSend = Constructor.ToArray();
+                Constructor.Clear();
+
+                ns.Write(ToSend, 0, ToSend.Length);
+                Console.WriteLine("[+] Sent " + RealFilename);
+            }
+            tcpClient.Close();
         }
 
-        private static void SendDirectory(string selection)
+
+        private static void SendDirectory(string selection, string ip)
         {
-            throw new NotImplementedException();
+            List<string> files = Directory.EnumerateFiles(selection, "*", SearchOption.TopDirectoryOnly).ToList();
+            foreach (string file in files)
+            {
+                FilesToSend.Add(file);
+            }
+            SendFile(ip);
         }
     }
 }
