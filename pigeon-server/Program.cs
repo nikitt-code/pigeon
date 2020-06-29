@@ -15,7 +15,7 @@ namespace pigeon_server
         public struct Packet
         {
             public string Filename;
-            public int FileSize;
+            public ulong FileSize;
             public byte[] FileContents;
         }
         public static NetworkStream NetworkStream { get; private set; }
@@ -53,6 +53,7 @@ namespace pigeon_server
             if (Result == 0)
             {
                 Console.Write("  File successfully transferred.\r\n");
+                SaveFiles(files);
             } else
             {
                 Console.Write("  Some files were corrupted. Do you still want to save them?\r\n");
@@ -67,22 +68,67 @@ namespace pigeon_server
 
         }
 
+        /// <summary>
+        /// Saves all files from Packet array
+        /// </summary>
+        /// <param name="files">Array of dispatched packets</param>
         private static void SaveFiles(Packet[] files)
         {
-            
+            Console.Write(" Files will be saved to /save/. Press ENTER to continue."); Console.ReadLine();
+
         }
 
+        /// <summary>
+        /// Dispatches packet into a readable form
+        /// </summary>
+        /// <param name="files">Array of Packet structures</param>
+        /// <param name="buffer">Array of bytes to dispatch</param>
+        /// <returns>Status code, 0 being success and 1 being corruption.</returns>
         private static int DispatchPacket(ref Packet[] files, byte[] buffer)
         {
             List<Packet> PacketsDispatched = new List<Packet>();
             int Position = 0;
+            List<byte> BufferList = buffer.ToList();
             while (true)
             {
                 var NewPacket = new Packet();
-                string FileName = ReadNT_UTF8_String(buffer, Position);
-            }
-        }
+                string FileName;
+                try
+                {
+                    FileName = ReadNT_UTF8_String(buffer, Position);
+                } catch
+                {
+                    return 1;
+                }
+                Position += FileName.Length + 1; //string + 0x00
+                byte[] LengthBytes = BufferList.GetRange(Position, 8).ToArray(); //after filename, takes 8 bytes
+                ulong FileLength = BitConverter.ToUInt64(LengthBytes, 0); //... and converts them to ulong
+                Position += 8;
+                byte[] FileBytes = BufferList.GetRange(Position, (int)FileLength).ToArray(); //TODO: Fix ulong/int bottleneck
+                Position += (int)FileLength; //Fix ulong/int bottleneck
 
+                NewPacket.FileSize = FileLength;
+                NewPacket.Filename = FileName;
+                NewPacket.FileContents = FileBytes;
+
+                // (vvv) Checks if FileName is small or contains invalid chars
+                if (FileName.Length < 1 || FileName.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) != -1 || FileName.Contains("..") || FileName.Contains("/")) { files = PacketsDispatched.ToArray(); return 1; }
+
+                PacketsDispatched.Add(NewPacket);
+
+                if (Position >= buffer.Length) break;
+            }
+            files = PacketsDispatched.ToArray();
+            return 0;
+        }
+        
+        /// <summary>
+        /// Reads null terminated UTF-8 string
+        /// </summary>
+        /// <param name="array">Array to read from</param>
+        /// <param name="offset">Offset to start reading from</param>
+        /// <param name="limit">Limit in bytes</param>
+        /// <returns>String</returns>
         public static string ReadNT_UTF8_String(byte[] array, int offset, int limit=128)
         {
             if (array.Length <= offset) throw new ArgumentException("Offset is higher than array length");
@@ -97,7 +143,12 @@ namespace pigeon_server
             return Output;
         }
 
-        public static byte[] ReadContents(Stream str)
+        /// <summary>
+        /// Reads all contents of NetworkStream
+        /// </summary>
+        /// <param name="str">Stream to read from</param>
+        /// <returns>Byte array of stream contents</returns>
+        public static byte[] ReadContents(NetworkStream str)
         {
             using (var memoryStream = new MemoryStream())
             {
