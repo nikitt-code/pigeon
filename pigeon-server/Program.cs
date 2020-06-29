@@ -18,7 +18,6 @@ namespace pigeon_server
             public ulong FileSize;
             public byte[] FileContents;
         }
-        public static NetworkStream NetworkStream { get; private set; }
 
         static void Main(string[] args)
         {
@@ -40,10 +39,7 @@ namespace pigeon_server
             TcpClient tcpClient = tcpListener.AcceptTcpClient();
             NetworkStream ns = tcpClient.GetStream();
             ns.ReadTimeout = 300000;
-            ns.WriteTimeout = 36000;
-            StreamReader sr = new StreamReader(ns);
-            StreamWriter sw = new StreamWriter(ns);
-            sw.AutoFlush = true;
+            ns.WriteTimeout = 1000;
             Console.Clear();
             Console.Write(" [ Connected ] \r\n");
 
@@ -75,7 +71,11 @@ namespace pigeon_server
         private static void SaveFiles(Packet[] files)
         {
             Console.Write(" Files will be saved to /save/. Press ENTER to continue."); Console.ReadLine();
-
+            foreach (Packet p in files)
+            {
+                File.WriteAllBytes("save/" + p.Filename, p.FileContents);
+                Console.Write("Saved " + p.Filename + "!\r\n");
+            }
         }
 
         /// <summary>
@@ -111,10 +111,10 @@ namespace pigeon_server
                 NewPacket.Filename = FileName;
                 NewPacket.FileContents = FileBytes;
 
+                PacketsDispatched.Add(NewPacket);
+
                 // (vvv) Checks if FileName is small or contains invalid chars
                 if (FileName.Length < 1 || FileName.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) != -1 || FileName.Contains("..") || FileName.Contains("/")) { files = PacketsDispatched.ToArray(); return 1; }
-
-                PacketsDispatched.Add(NewPacket);
 
                 if (Position >= buffer.Length) break;
             }
