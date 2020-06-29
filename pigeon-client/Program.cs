@@ -21,7 +21,6 @@ namespace pigeon_client
                 Console.Write(c);
                 Thread.Sleep(5);
             }
-            Console.ReadKey();
 
             if (args.Length != 3)
             {

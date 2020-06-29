@@ -29,7 +29,6 @@ namespace pigeon_server
                 Console.Write(c);
                 Thread.Sleep(5);
             }
-            Console.ReadKey();
             // start listener
 
             IPAddress ip = IPAddress.Parse("0.0.0.0");
