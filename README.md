@@ -1,5 +1,6 @@
 # Pegion
 https://github.com/nikitt-code/pegion
+https://pigeon-dev.gitbook.io/pigeon-doc/
 
 ### Client
 ```bash
@@ -17,8 +18,8 @@ $ pigeon-server.exe
 
 | Name | Link | Role |
 | ------ | ------ | ------ |
-| kolya5544 | https://vk.com/kolya5544| Developer |
-| niki_tt | https://vk.com/niki_tt | Creator |
+| kolya5544 | https://vk.com/kolya5544| Developer, creative manager, UX |
+| niki_tt | https://vk.com/niki_tt | Creator, developer, CEO, design |
 
 ### Todos
 
