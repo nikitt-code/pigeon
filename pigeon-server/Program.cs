@@ -56,7 +56,7 @@ namespace pigeon_server
             ns.ReadTimeout = 300000;
             ns.WriteTimeout = 1000;
             Console.Clear();
-            W("[Log] Connected");
+            W("[Info] Connected");
 
             try
             {
@@ -65,7 +65,7 @@ namespace pigeon_server
                 var Result = DispatchPacket(ref files, buffer);
                 if (Result == 0)
                 {
-                    W("[Log] Files successfully transferred.");
+                    W("[Info] Files successfully transferred.");
                     SaveFiles(files);
                 }
                 else
@@ -82,7 +82,7 @@ namespace pigeon_server
                 }
             } catch
             {
-                R("[ERROR] Error occured while saving.");
+                R("[Error] Error occured while saving.");
             }
 
         }
@@ -93,13 +93,15 @@ namespace pigeon_server
         /// <param name="files">Array of dispatched packets</param>
         private static void SaveFiles(Packet[] files)
         {
-            W("[Log] Files will be saved to /save/. Press ENTER to continue."); Console.ReadLine();
+            W("[Info] Files will be saved to /save/.");
             if (!Directory.Exists("save")) Directory.CreateDirectory("save");
+            Console.WriteLine("[Info] Saved:");
             foreach (Packet p in files)
             {
                 File.WriteAllBytes("save/" + p.Filename, p.FileContents);
-                G("[Log] Saved " + p.Filename + "!\r\n");
+                G("             + " + p.Filename + "\r\n");
             }
+            W("[Info] Files saved. Press any key to continue."); Console.ReadKey();
         }
 
         /// <summary>
@@ -155,7 +157,7 @@ namespace pigeon_server
         /// <returns>String</returns>
         public static string ReadNT_UTF8_String(byte[] array, int offset, int limit=128)
         {
-            if (array.Length <= offset) throw new ArgumentException("[Log] Offset is higher than array length");
+            if (array.Length <= offset) throw new ArgumentException("[Warning] Offset is higher than array length");
             string Output = "";
             for (int i = offset; i<array.Length; i++)
             {

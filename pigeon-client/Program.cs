@@ -42,9 +42,9 @@ namespace pigeon_client
 
             if (args.Length != 2)
             {
-                Console.WriteLine("[Info] Usage: client.exe ip file/dir_to_send");
-                Console.WriteLine("[Info] File -> file to send");
-                Console.WriteLine("[Info] Dir -> directory to send (NON-RECURISVE!!!!!!!)");
+                Console.WriteLine("[Info] Usage: client.exe <ip> <way to file or dir>");
+                Console.WriteLine("       Example: client.exe 127.0.0.1 C:\\my-folder\\");
+                Console.WriteLine("                client.exe 127.0.0.1 C:\\my-image.png");
             } else
             {
                 string ip = args[0];
@@ -65,7 +65,7 @@ namespace pigeon_client
         private static void SendFile(string ip)
         {
             
-            W("[Log] Initializing sender...");
+            W("[Info] Initializing sender...");
             TcpClient tcpClient = null;
             NetworkStream ns = null;
             try
@@ -76,7 +76,7 @@ namespace pigeon_client
                 ns.ReadTimeout = 1000;
             } catch
             {
-                R("[ERROR] Error occured while connecting."); return;
+                R("[Error] Error occured while connecting."); return;
             }
 
             foreach (string SFile in FilesToSend)
@@ -85,7 +85,7 @@ namespace pigeon_client
                 {
                     byte[] BytesOfFileToSend = File.ReadAllBytes(SFile);
                     string RealFilename = Path.GetFileName(SFile);
-                    W("[Log] Sending " + RealFilename);
+                    W("[Info] Sending " + RealFilename);
                     ulong FileSize = (ulong)new FileInfo(SFile).Length;
 
                     List<byte> Constructor = new List<byte>();
@@ -97,10 +97,10 @@ namespace pigeon_client
                     byte[] ToSend = Constructor.ToArray();
                     Constructor.Clear();
                     ns.Write(ToSend, 0, ToSend.Length);
-                    G("[Log] Sent " + RealFilename);
+                    G("[Info] Sent " + RealFilename);
                 } catch
                 {
-                    R("[ERROR] Error occured while sending " + SFile); return;
+                    R("[Error] Error occured while sending " + SFile); return;
                 }
             }
             tcpClient.Close();
